@@ -27,8 +27,8 @@ spec:
       - name: {{ .Chart.Name }}-api
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        commands: '["/bin/bash", "-c"]'
-        args: '"bash /start.sh"'
+        command: ["/bin/bash", "-c"]
+        args: ["/start.sh"]
         ports:
           - name: http
             containerPort: {{ .Values.container.port }}

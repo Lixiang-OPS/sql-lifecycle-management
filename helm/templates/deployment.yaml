@@ -1,0 +1,64 @@
+# 兼容Deployment apiVersion
+apiVersion: apps/v1
+# 兼容资源类型
+kind: Deployment
+metadata:
+  name: {{ template "sqllifemanagement.fullname" . }}
+  labels:
+    app: {{ template "sqllifemanagement.name" . }}
+    chart: {{ template "sqllifemanagement.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "sqllifemanagement.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "sqllifemanagement.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      imagePullSecrets:
+      - name: {{ .Values.image.secrets }}
+      containers:
+      - name: {{ .Chart.Name }}-api
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - name: http
+            containerPort: {{ .Values.container.port }}
+            protocol: {{ .Values.container.protocol }}
+        {{- if .Values.volumes.enabled }}
+        volumeMounts:
+        - name: {{ .Values.volumes.name }}
+          subPath: {{ .Values.volumes.subpath }}
+          mountPath: {{ .Values.volumes.mountpath }}
+      {{- end }}
+
+  {{- if .Values.volumes.enabled  }}
+      volumes:
+      - name: {{ .Values.volumes.name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.volumes.claimname }}
+  {{- end }}
+
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      # 节点选择器
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+     # 节点选择器
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      # 调度策略
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

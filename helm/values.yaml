@@ -1,0 +1,66 @@
+# AntiDDOS-Main先关配置选项
+# https://repos.capitalonline.net/cdsvm/resop.git
+
+replicaCount: 2
+nameOverride: sqllifemanagement
+
+
+# Docker镜像相关配置
+image:
+  repository: artifactory.ep.chehejia.com/it-docker-test-local/ops-permission-api
+  tag: v1
+  pullPolicy: Always
+  secrets: art-secret
+
+# 服务相关配置
+service:
+  name: sqllifemanagement
+  type: ClusterIP
+  port: 80
+
+
+
+# 容器相关配置
+container:
+  port: 8989
+  protocol: TCP
+
+
+# HTTP安全监测探针
+liveness:
+  path: /health
+  periodSeconds: 15
+  initialDelaySeconds: 180
+
+# Pod自动扩容配置
+scaler:
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+# Pod启动信息
+pod:
+  commands: '["/bin/bash", "-c"]'
+  args: '"bash /start.sh"'
+
+
+
+volumes:
+  enabled: false
+  name: resop
+  subpath: beijing8-pro/resop
+  claimname: pv-cdn-logs
+  mountpath: /app/logs/
+
+
+resources:
+  limits:
+    memory: 8Gi
+  requests:
+    memory: 512Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

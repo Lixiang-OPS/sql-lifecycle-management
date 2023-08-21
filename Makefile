@@ -1,7 +1,7 @@
 .PHONY: install install-pre-commit test style check
 
 install:
-	pip install -e .
+	pip3.8 install -e .
 
 install-pre-commit:
 	pre-commit install

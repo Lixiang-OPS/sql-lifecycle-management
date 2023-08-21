@@ -28,7 +28,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/bin/bash", "-c"]
-        args: ["start.sh"]
+        args: ["/home/admin/sqless/start.sh"]
         ports:
           - name: http
             containerPort: {{ .Values.container.port }}
